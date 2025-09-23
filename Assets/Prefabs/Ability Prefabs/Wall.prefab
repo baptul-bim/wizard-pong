@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3353605850295355653}
   - component: {fileID: 3353605850295355655}
   - component: {fileID: 3353605850295355654}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WallMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,9 +95,9 @@ GameObject:
   - component: {fileID: 3353605851551630565}
   - component: {fileID: 3353605851551630567}
   - component: {fileID: 1145758248}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Paddle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

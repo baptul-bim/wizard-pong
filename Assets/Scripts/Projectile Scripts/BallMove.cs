@@ -8,7 +8,12 @@ public class BallMove : MonoBehaviour
 
     [SerializeField] public float ballSpeed;
     [SerializeField] public float bounceSpeedMod;
+    [SerializeField] public float curSpeed;
     [SerializeField] private float maxSpeed;
+
+    [SerializeField] public bool grabbed;
+
+
 
 
 
@@ -16,7 +21,7 @@ public class BallMove : MonoBehaviour
     void Start()
     {
         rb.AddRelativeForce(Vector2.left*ballSpeed);
-        rb.velocity = Vector2.left * ballSpeed;
+        rb.velocity = new Vector2(-1, 1) * ballSpeed;
 
         maxSpeed = ballSpeed * 3;
     }
@@ -32,22 +37,25 @@ public class BallMove : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
-            rb.velocity = new Vector2(rb.velocity.x, -rb.velocity.y);
+            SwapDirection();
         }
         else if (collision.gameObject.CompareTag("Paddle"))
         {
-            if (ballSpeed < maxSpeed)
+            /*if (ballSpeed < maxSpeed)
             {
-                ballSpeed = ballSpeed * bounceSpeedMod;
-                if (ballSpeed > maxSpeed) { ballSpeed = maxSpeed; }
-            }
+                ballSpeed = ballSpeed * GameManager.globalSpeedMod;
+                curSpeed = ballSpeed;
+                if (ballSpeed > maxSpeed) { ballSpeed = maxSpeed; curSpeed = maxSpeed; }
+            }*/
+
+
+            /* Vector2 wallCenter = collision.transform.position;
+             Vector2 colPoint = collision.contacts[0].point;*/
+
+            //Vector2 newDirection = new Vector2(-1, -0f).normalized; 
+            //rb.velocity = newDirection * ballSpeed;
             
-
-            Vector2 wallCenter = collision.transform.position;
-            Vector2 colPoint = collision.contacts[0].point;
-
-            Vector2 newDirection = new Vector2(-1, -0f).normalized; // Always move left with varying vertical angle
-            rb.velocity = newDirection * ballSpeed;
+            return;
 
         }
         
@@ -55,4 +63,11 @@ public class BallMove : MonoBehaviour
 
         
     }
+
+
+    public void SwapDirection()
+    {
+        rb.velocity = new Vector2(-rb.velocity.x, -rb.velocity.y);
+    }
+
 }

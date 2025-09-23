@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 80032594189735661}
   - component: {fileID: 7213423878811076355}
   - component: {fileID: 7302277101264871217}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Magic Ball
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: dcea78b6e13d36e4dbad8afd2455d239, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,8 +99,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 7302277101264871217}
-  ballSpeed: 0
-  bounceSpeedMod: 0
+  ballSpeed: 5
+  bounceSpeedMod: 1.1
+  curSpeed: 0
+  maxSpeed: 0
+  grabbed: 0
 --- !u!58 &7213423878811076355
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -110,7 +113,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 80032594189735570}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: dc9357de55e41104e9f94d98564a8aeb, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -131,10 +134,10 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 6200000, guid: dc9357de55e41104e9f94d98564a8aeb, type: 2}
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
