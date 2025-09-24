@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] AbilityManager abilityManager;
 
     Rigidbody2D rb;
 
@@ -11,7 +12,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float moveSpeed;
 
-    [SerializeField] AbilityManager abilityManager;
+
 
     // Start is called before the first frame update
     void Start()

@@ -15,11 +15,12 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private float wallDuration;
     [SerializeField] private float wallOffset;
     [SerializeField] private float wallCd = 0.5f;
-    private bool wallReady;
+    [SerializeField] private bool wallReady;
 
     [Header("Grab Ability")]
     [SerializeField] GameObject ball;
     [SerializeField] Rigidbody2D ballRb;
+    [SerializeField] GameObject tempGrabFX;
     [SerializeField] BallMove ballScript;
     [SerializeField] private float ballSpeed;
     [SerializeField] private float grabRange;
@@ -59,7 +60,7 @@ public class AbilityManager : MonoBehaviour
 
             wallInstance = Instantiate(wallPrefab, spawnPosObj.transform.position, this.transform.rotation);
 
-            Rigidbody shotRB = wallInstance.GetComponent<Rigidbody>();
+            Rigidbody wallRB = wallInstance.GetComponent<Rigidbody>();
             //  shotInstance.GetComponent<Rigidbody>().AddForce(shotInstance.transform.forward * shotSpeed, 1, 1);
 
             //shotRB.AddForce(gameObject.transform.forward * shotSpeed);
@@ -77,15 +78,11 @@ public class AbilityManager : MonoBehaviour
         Vector2 ballPos = ball.transform.position;
         if (Vector2.Distance(ballPos, this.transform.position) <= grabRange)
         {
+            tempGrabFX.SetActive(true);
             wallReady = false;
 
             GameManager.globalSpeedMod += 0.1f;
             print(GameManager.globalSpeedMod);
-
-            /* Vector3 vel = ballRb.velocity;
-             vel.x = 0;
-             vel.y = 0;
-             ballRb.velocity = vel;*/
 
             ballRb.simulated = false;
             ballScript.SwapDirection();
@@ -94,12 +91,17 @@ public class AbilityManager : MonoBehaviour
             ballRb.simulated = true;
             ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
 
-            // vel.x = 1 * (5 * GameManager.globalSpeedMod);
-            //   ballRb.velocity = vel;
 
-
-
+            tempGrabFX.SetActive(false);
             wallReady = true;
+        }
+        else
+        {
+            tempGrabFX.SetActive(true);
+
+            yield return new WaitForSeconds(0.1f);
+
+            tempGrabFX.SetActive(false);
         }
         
 
