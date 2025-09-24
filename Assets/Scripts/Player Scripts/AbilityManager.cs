@@ -25,12 +25,16 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private float ballSpeed;
     [SerializeField] private float grabRange;
     [SerializeField] private float grabDuration;
+    [SerializeField] private float grabCd;
+    [SerializeField] private bool grabReady;
+
+    [SerializeField] private bool abilityReady;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        wallReady = true;
+        abilityReady = true;
         ball = GameObject.FindWithTag("Projectile");
         ballRb = ball.GetComponent<Rigidbody2D>();
         ballScript = ball.GetComponent<BallMove>();
@@ -53,9 +57,9 @@ public class AbilityManager : MonoBehaviour
 
     public IEnumerator WallAbility()
     {
-        if (wallReady)
+        if (abilityReady)
         {
-            wallReady = false;
+            abilityReady = false;
             GameObject wallInstance;
 
             wallInstance = Instantiate(wallPrefab, spawnPosObj.transform.position, this.transform.rotation);
@@ -68,41 +72,40 @@ public class AbilityManager : MonoBehaviour
             Destroy(wallInstance, wallDuration);
 
             yield return new WaitForSeconds(wallCd);
-            wallReady = true;
+            abilityReady = true;
         }
         
     }
 
     public IEnumerator GrabAbility()
     {
-        Vector2 ballPos = ball.transform.position;
-        if (Vector2.Distance(ballPos, this.transform.position) <= grabRange)
+        if (abilityReady)
         {
+            Vector2 ballPos = ball.transform.position;
             tempGrabFX.SetActive(true);
-            wallReady = false;
+            abilityReady = false;
 
-            GameManager.globalSpeedMod += 0.1f;
-            print(GameManager.globalSpeedMod);
+            if (Vector2.Distance(ballPos, this.transform.position) <= grabRange)
+            {
+                GameManager.globalSpeedMod += 0.1f;
+                print(GameManager.globalSpeedMod);
 
-            ballRb.simulated = false;
-            ballScript.SwapDirection();
-            yield return new WaitForSeconds(grabDuration);
+                ballRb.simulated = false;
+                ballScript.SwapDirection();
+                yield return new WaitForSeconds(grabDuration);
 
-            ballRb.simulated = true;
-            ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
+                ballRb.simulated = true;
+                ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
+            }
+
 
 
             tempGrabFX.SetActive(false);
-            wallReady = true;
-        }
-        else
-        {
-            tempGrabFX.SetActive(true);
+            abilityReady = true;
+            
 
-            yield return new WaitForSeconds(0.1f);
-
-            tempGrabFX.SetActive(false);
         }
+        
         
 
     }
