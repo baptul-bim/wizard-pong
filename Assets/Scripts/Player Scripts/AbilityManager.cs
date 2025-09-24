@@ -82,11 +82,13 @@ public class AbilityManager : MonoBehaviour
         if (abilityReady)
         {
             Vector2 ballPos = ball.transform.position;
-            tempGrabFX.SetActive(true);
-            abilityReady = false;
 
             if (Vector2.Distance(ballPos, this.transform.position) <= grabRange)
             {
+                tempGrabFX.SetActive(true);
+                abilityReady = false;
+                
+
                 GameManager.globalSpeedMod += 0.1f;
                 print(GameManager.globalSpeedMod);
 
@@ -96,14 +98,22 @@ public class AbilityManager : MonoBehaviour
 
                 ballRb.simulated = true;
                 ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
+
+
+                tempGrabFX.SetActive(false);
+                abilityReady = true;
+                
             }
+            else
+            {
+                abilityReady = false;
+                tempGrabFX.SetActive(true);
 
+                yield return new WaitForSeconds(0.1f);
 
-
-            tempGrabFX.SetActive(false);
-            abilityReady = true;
-            
-
+                abilityReady = true;
+                tempGrabFX.SetActive(false);
+            }
         }
         
         
