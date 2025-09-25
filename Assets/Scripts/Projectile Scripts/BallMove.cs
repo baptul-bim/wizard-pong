@@ -13,6 +13,12 @@ public class BallMove : MonoBehaviour
     [SerializeField] public float curSpeed;
     [SerializeField] private float maxSpeed;
 
+    public Vector2 savedVelocity;
+
+    private float serveSpeed;
+
+    private bool firstBounce = true;
+
     [SerializeField] public bool grabbed;
 
     [SerializeField] TMP_Text speedText;
@@ -28,13 +34,18 @@ public class BallMove : MonoBehaviour
 
         StartCoroutine(BallServe());
         maxSpeed = ballSpeed * 3;
+
+        StartCoroutine(ServeSpeedIncrease());
     }
 
     // Update is called once per frame
     void Update()
     {
         curSpeed = ballSpeed * GameManager.globalSpeedMod;
-        rb.velocity = Vector2.ClampMagnitude(rb.velocity, curSpeed);
+        //rb.velocity = savedVelocity;
+        
+
+        
 
         speedText.text = curSpeed.ToString("#.0");
     }
@@ -42,21 +53,65 @@ public class BallMove : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
+        var normal = collision.contacts[0].normal;
+
+        Vector2 bounce = Vector2.Reflect(savedVelocity, normal);
+
+
+        Debug.DrawLine(collision.contacts[0].point, normal + collision.contacts[0].point, Color.red, 2f);
+        Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point - rb.velocity, Color.green, 2f);
+        Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point + bounce, Color.blue, 2f);
+
+        rb.velocity = bounce;
+
+        savedVelocity = rb.velocity;
+
+
+
+
+        if (firstBounce)
         {
-            SwapDirection();
+            print("firstbounce");
+            //float firstBounceAngle = UnityEngine.Random.Range(-90, 90);
+            float firstBounceAngle = UnityEngine.Random.Range(0, 1);
+
+
+            
+            if (firstBounceAngle == 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, Quaternion.Euler(0, 110, 0).y); //APPROXIMATELY 10 DEGREES. I EYEBALLED IT WITH AN ACTUAL RULER.
+                //rb.angularVelocity = -10;
+            }
+            else if (firstBounceAngle == 1)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, Quaternion.Euler(0, -110, 0).y); //APPROXIMATELY -10 DEGREES. I EYEBALLED IT WITH AN ACTUAL RULER.
+                //rb.angularVelocity = 10;
+            }
+
+            savedVelocity = rb.velocity;
+            firstBounce = false;
+
+        }
+
+      /*  if (collision.gameObject.CompareTag("Wall"))
+        {
+
+            //rb.velocity = new Vector2(rb.velocity.x, -rb.velocity.y);
         }
         else if (collision.gameObject.CompareTag("Paddle"))
         {
-            Destroy(collision.gameObject);
+            //Destroy(collision.gameObject);
             
             return;
 
-        }
-        else if (collision.gameObject.CompareTag("City"))
+        }*/
+        if (collision.gameObject.CompareTag("City"))
         {
             collision.gameObject.GetComponent<CityManager>().DamageCity(rb.velocity.magnitude*2);
         }
+
+
+        
         
         //rb.velocity = rb.velocity * bounceSpeedMod;
 
@@ -76,14 +131,23 @@ public class BallMove : MonoBehaviour
 
 
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2);
 
-        rb.velocity = new Vector2(-1, 1) * curSpeed;
-        
+        rb.velocity = new Vector2(-1 + serveSpeed, 0) * curSpeed;
+        savedVelocity = rb.velocity;
         print(curSpeed);
         //Math.Sign(playerXPos);
 
         rb.simulated = true;
+    }
+
+    private IEnumerator ServeSpeedIncrease()
+    {
+
+        yield return new WaitForSeconds(10);
+        serveSpeed += 0.5f;
+        StartCoroutine(ServeSpeedIncrease());
+
     }
 
 }

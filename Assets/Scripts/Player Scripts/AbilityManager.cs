@@ -29,12 +29,18 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private float ballSpeed;
     [SerializeField] private float grabRange;
     [SerializeField] private float grabDuration;
+    [SerializeField] private bool grabReady;
+
+    private bool abilityReady;
 
 
     // Start is called before the first frame update
     void Start()
     {
         wallReady = true;
+        abilityReady = true;
+        grabReady = true;
+
         ball = GameObject.FindWithTag("Projectile");
         ballRb = ball.GetComponent<Rigidbody2D>();
         ballScript = ball.GetComponent<BallMove>();
@@ -48,7 +54,7 @@ public class AbilityManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (abilityReady == false && wallCDvalue > 0)
+        if (wallReady == false && wallCDvalue > 0)
         {
             wallCDvalue -= Time.deltaTime;
             cdSlider.value = wallCDvalue;
@@ -61,89 +67,58 @@ public class AbilityManager : MonoBehaviour
 
     public IEnumerator WallAbility()
     {
-<<<<<<< Updated upstream
-        if (wallReady)
-=======
-        if (abilityReady && (Math.Sign(Mathf.Abs(spawnPosObj.transform.position.x) - Mathf.Abs(ball.transform.position.x)) > 0))
->>>>>>> Stashed changes
+
+        if (abilityReady)
         {
-            wallReady = false;
-            GameObject wallInstance;
+            StartCoroutine(StopAbilityOverlap(wallDuration));
 
-            wallInstance = Instantiate(wallPrefab, spawnPosObj.transform.position, this.transform.rotation);
+            if (wallReady && (Math.Sign(Mathf.Abs(spawnPosObj.transform.position.x) - Mathf.Abs(ball.transform.position.x)) > 0))
+            {
 
-            Rigidbody wallRB = wallInstance.GetComponent<Rigidbody>();
-            //  shotInstance.GetComponent<Rigidbody>().AddForce(shotInstance.transform.forward * shotSpeed, 1, 1);
+                
+                wallReady = false;
+                GameObject wallInstance;
 
-            //shotRB.AddForce(gameObject.transform.forward * shotSpeed);
+                wallInstance = Instantiate(wallPrefab, spawnPosObj.transform.position, this.transform.rotation);
 
-            Destroy(wallInstance, wallDuration);
+                Rigidbody wallRB = wallInstance.GetComponent<Rigidbody>();
+                //  shotInstance.GetComponent<Rigidbody>().AddForce(shotInstance.transform.forward * shotSpeed, 1, 1);
 
-            wallCDvalue = wallCd;
-            //StartCoroutine(CooldownBar());
-            yield return new WaitForSeconds(wallCd);
-            wallReady = true;
+                //shotRB.AddForce(gameObject.transform.forward * shotSpeed);
+
+                Destroy(wallInstance, wallDuration);
+                
+
+                wallCDvalue = wallCd;
+                //StartCoroutine(CooldownBar());
+                yield return new WaitForSeconds(wallCd);
+                wallReady = true;
+            }
+            else if (abilityReady) { print("nuh uh!"); }
         }
-        else if (abilityReady) { print("nuh uh!"); }
-        
     }
 
-    private IEnumerator CooldownBar()
-    {
-
-        wallCDvalue -= Time.deltaTime;
-        cdSlider.value = wallCDvalue;
-
-        if (wallCDvalue <= 0) 
-        {
-            yield return null;
-        }
-     //   cdSlider.value = Mathf.MoveTowards(cdSlider.value, 0, wallCd * Time.deltaTime);
-        
-
-    }
 
     public IEnumerator GrabAbility()
     {
         Vector2 ballPos = ball.transform.position;
-        if (Vector2.Distance(ballPos, this.transform.position) <= grabRange)
+
+
+        if (abilityReady)
         {
-            tempGrabFX.SetActive(true);
-<<<<<<< Updated upstream
-            wallReady = false;
+            StartCoroutine(StopAbilityOverlap(grabDuration));
 
-            GameManager.globalSpeedMod += 0.1f;
-            print(GameManager.globalSpeedMod);
-=======
-            abilityReady = false;
-            Vector2 ballPos = ball.transform.position;
-
-            if (Vector2.Distance(ballPos, this.transform.position) <= grabRange)
+            if (grabReady && Vector2.Distance(ballPos, this.transform.position) <= grabRange)
             {
+                grabReady = false;
+                tempGrabFX.SetActive(true);
+
                 
-                
->>>>>>> Stashed changes
+                GameManager.globalSpeedMod += 0.1f;
+                print(GameManager.globalSpeedMod);
 
-            ballRb.simulated = false;
-            ballScript.SwapDirection();
-            yield return new WaitForSeconds(grabDuration);
+                abilityReady = false;
 
-<<<<<<< Updated upstream
-            ballRb.simulated = true;
-            ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
-
-
-            tempGrabFX.SetActive(false);
-            wallReady = true;
-        }
-        else
-        {
-            tempGrabFX.SetActive(true);
-
-            yield return new WaitForSeconds(0.1f);
-
-            tempGrabFX.SetActive(false);
-=======
                 int ballXPos = Math.Sign(ball.GetComponent<Rigidbody2D>().velocity.x);
                 int playerXPos = Math.Sign(this.transform.position.x);
 
@@ -151,39 +126,43 @@ public class AbilityManager : MonoBehaviour
                 {
                     ballScript.SwapDirection(); ;
                 }
-                /*else if (playerXPos + ballXPos == 0)
-                {
-                    
-                }
-                else
-                {
-                    
-                }*/
-                
 
-                    ballRb.simulated = false;
+                ballRb.simulated = false;
+
                 
                 yield return new WaitForSeconds(grabDuration);
 
                 ballRb.simulated = true;
                 ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
+                ballScript.savedVelocity = ballRb.velocity;
 
 
                 tempGrabFX.SetActive(false);
-                abilityReady = true;
-                
+                grabReady = true;
+
             }
             else
             {
+                grabReady = false;
+                tempGrabFX.SetActive(true);
+
                 yield return new WaitForSeconds(grabDuration);
 
-                abilityReady = true;
+                grabReady = true;
                 tempGrabFX.SetActive(false);
             }
->>>>>>> Stashed changes
         }
-        
+    }
+
+    private IEnumerator StopAbilityOverlap(float abilityDuration)
+    {
+        abilityReady = false;
+        yield return new WaitForSeconds(abilityDuration);
+        abilityReady = true;
+
 
     }
+        
+
     
 }
