@@ -18,9 +18,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject ball;
     [SerializeField] GameObject ballPrefab;
 
+    [Header("Camera Shake")]
+    [SerializeField] public GameObject cam;
+    [SerializeField] private Vector3 _ogCamPos;
+    [SerializeField] private bool screenShaking;
+    [SerializeField] private float _shakeStr; 
+
     // Start is called before the first frame update
     void Start()
     {
+        _ogCamPos = cam.transform.position;
         globalSpeedMod = 1;
 
         
@@ -34,13 +41,20 @@ public class GameManager : MonoBehaviour
             globalSpeedMod = 3;
         }
 
-       /* if (ball != null)
+        /* if (ball != null)
+         {
+             ball = Instantiate(ballPrefab, Vector2.zero, this.transform.rotation);
+
+             ball.GetComponent<BallMove>().BallServe(player2.transform.position.x);
+
+         }*/
+
+        if (screenShaking) 
         {
-            ball = Instantiate(ballPrefab, Vector2.zero, this.transform.rotation);
+            cam.transform.position = new Vector3(_ogCamPos.x, _ogCamPos.y, _ogCamPos.z) + new Vector3(Random.insideUnitCircle.x, Random.insideUnitCircle.y, 0) * _shakeStr;
 
-            ball.GetComponent<BallMove>().BallServe(player2.transform.position.x);
-
-        }*/
+            _shakeStr -= Time.deltaTime/2;
+        }
     }
 
 
@@ -50,5 +64,34 @@ public class GameManager : MonoBehaviour
 
 
         yield return new WaitForSeconds(globalSpeedMod);
+    }
+
+
+    public IEnumerator ShakeCamera(float shakeDuration, float shakeStr)
+    {
+        if (!screenShaking)
+        {
+            _shakeStr = shakeStr;
+            screenShaking = true;
+
+            yield return new WaitForSeconds(shakeDuration);
+
+            ShakeStop();
+        }
+
+    }
+
+    private void ShakeStop()
+    {
+
+        screenShaking=false;
+        cam.transform.position = _ogCamPos;
+        
+        
+    }
+
+    public IEnumerator FlashCity(Vector2 position)
+    {
+        yield return null;
     }
 }

@@ -10,7 +10,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject ball;
     [SerializeField] float moveSpeed;
     [SerializeField] private float reactionDelay;
-    private float ballPos;
+    private Vector2 ballPos;
     Rigidbody2D rb;
 
     private Transform currentTransform;
@@ -25,17 +25,26 @@ public class EnemyController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         ball = GameObject.FindWithTag("Projectile");
 
-        StartCoroutine(ReactionDelay());
-
-        ballPos = ball.transform.position.y - transform.position.y;
     }
 
     private void Update()
     {
-        if (ball.transform.position.x >= 7)  
+        ballPos = ball.transform.position;
+
+        if (ball.GetComponent<Rigidbody2D>().velocity.x! > 0)
         {
-            StartCoroutine(abilityManager.WallAbility());
+            if (Vector2.Distance(ballPos, transform.position) <= 1f)
+            {
+                print("grab??");
+                StartCoroutine(abilityManager.GrabAbility());
+            }
+            if (ballPos.x >= 7)
+            {
+               StartCoroutine(abilityManager.WallAbility());
+            }
+
         }
+
     }
 
     // Update is called once per frame
@@ -45,11 +54,13 @@ public class EnemyController : MonoBehaviour
         currentTransform = this.transform;
         if (currentTransform.position.x > ball.transform.position.x)
         {
-            if (currentTransform.position.y < ball.transform.position.y)
+            
+
+            if (currentTransform.position.y + 0.5f < ball.transform.position.y) //if ball high go up
             {
                 rb.velocity = Vector2.Lerp(rb.velocity, Vector2.up * moveSpeed, reactionDelay * Time.deltaTime);
             }
-            else if (currentTransform.position.y > ball.transform.position.y)
+            else if (currentTransform.position.y - 0.5f > ball.transform.position.y) //if ball low go down
             {
                 rb.velocity = Vector2.Lerp(rb.velocity, Vector2.down * moveSpeed, reactionDelay * Time.deltaTime);
             }
@@ -61,14 +72,5 @@ public class EnemyController : MonoBehaviour
         }
 
     }
-    IEnumerator ReactionDelay() // OLD
-    {
-       // float currentBallPos = ball.transform.position.y - transform.position.y;
 
-        yield return new WaitForSeconds(reactionDelay);
-      //  this.transform.position.y = MoveTowards(transform.position.y, currentBallPos);
-        
-
-        StartCoroutine(ReactionDelay());
-    }
 }

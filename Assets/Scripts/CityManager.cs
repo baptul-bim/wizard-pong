@@ -9,16 +9,23 @@ public class CityManager : MonoBehaviour
     [SerializeField] float cityShield;
     [SerializeField] Slider cityHealthSlider;
     [SerializeField] Slider cityShieldSlider;
+    [SerializeField] GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.FindObjectOfType<GameManager>();
         
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(gameManager.ShakeCamera(5, 1));
+        }
         /*
         cityHealthSlider.value = cityHealth;
         cityShieldSlider.value = cityShield;
@@ -49,6 +56,7 @@ public class CityManager : MonoBehaviour
 
     public void DestroyCity()
     {
+        StartCoroutine(gameManager.ShakeCamera(1, 0.5f));
         print("City Destroyed!");
     }
 

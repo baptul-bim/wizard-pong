@@ -48,19 +48,7 @@ public class BallMove : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Paddle"))
         {
-            /*if (ballSpeed < maxSpeed)
-            {
-                ballSpeed = ballSpeed * GameManager.globalSpeedMod;
-                curSpeed = ballSpeed;
-                if (ballSpeed > maxSpeed) { ballSpeed = maxSpeed; curSpeed = maxSpeed; }
-            }*/
-
-
-            /* Vector2 wallCenter = collision.transform.position;
-             Vector2 colPoint = collision.contacts[0].point;*/
-
-            //Vector2 newDirection = new Vector2(-1, -0f).normalized; 
-            //rb.velocity = newDirection * ballSpeed;
+            Destroy(collision.gameObject);
             
             return;
 
