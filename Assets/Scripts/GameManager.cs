@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 
-    public static float globalSpeedMod = 1;
+    [SerializeField] public static float globalSpeedMod;
 
     public static bool canUseAbilities = false;
 
@@ -22,7 +22,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] public GameObject cam;
     [SerializeField] private Vector3 _ogCamPos;
     [SerializeField] private bool screenShaking;
-    [SerializeField] private float _shakeStr; 
+    [SerializeField] private float _shakeStr;
+    private float setStrength;
+    private float setDuration;
+
+    [Header("Camera Flash")]
+    [SerializeField] float flashDuration;
+    [SerializeField] float fadeSpeed;
 
     // Start is called before the first frame update
     void Start()
@@ -53,7 +59,7 @@ public class GameManager : MonoBehaviour
         {
             cam.transform.position = new Vector3(_ogCamPos.x, _ogCamPos.y, _ogCamPos.z) + new Vector3(Random.insideUnitCircle.x, Random.insideUnitCircle.y, 0) * _shakeStr;
 
-            _shakeStr -= Time.deltaTime/2;
+            _shakeStr -= (Time.deltaTime * setStrength) / setDuration;
         }
     }
 
@@ -72,11 +78,35 @@ public class GameManager : MonoBehaviour
         if (!screenShaking)
         {
             _shakeStr = shakeStr;
+            setStrength = shakeStr;
+            setDuration = shakeDuration;
             screenShaking = true;
 
             yield return new WaitForSeconds(shakeDuration);
 
             ShakeStop();
+        }
+
+    }
+
+    public IEnumerator FlashCamera(SpriteRenderer flashSprite)
+    {
+
+        float alphaVal = flashSprite.color.a;
+        Color tmp = flashSprite.color;
+
+        alphaVal = 0.75f;
+        tmp.a = alphaVal;
+        flashSprite.color = tmp;
+
+
+        while (flashSprite.color.a > 0)
+        {
+            alphaVal -= 0.01f;
+            tmp.a = alphaVal;
+            flashSprite.color = tmp;
+
+            yield return new WaitForSeconds(fadeSpeed);
         }
 
     }

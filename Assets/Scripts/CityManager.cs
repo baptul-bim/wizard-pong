@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CityManager : MonoBehaviour
@@ -10,6 +11,8 @@ public class CityManager : MonoBehaviour
     [SerializeField] Slider cityHealthSlider;
     [SerializeField] Slider cityShieldSlider;
     [SerializeField] GameManager gameManager;
+
+    [SerializeField] public SpriteRenderer flash;
 
     // Start is called before the first frame update
     void Start()
@@ -35,10 +38,13 @@ public class CityManager : MonoBehaviour
     public void DamageCity(float damage)
     {
         print(damage);
+
+        StartCoroutine(gameManager.FlashCamera(flash));
         if (cityShield > 0)
         {
             cityShield -= damage;
             cityShieldSlider.value = cityShield;
+            StartCoroutine(gameManager.ShakeCamera(0.5f, 0.3f));
         }
         else if (cityHealth > 0)
         {
@@ -51,13 +57,22 @@ public class CityManager : MonoBehaviour
             DestroyCity();
         }
 
-        GameManager.globalSpeedMod = 1;
     }
 
     public void DestroyCity()
     {
         StartCoroutine(gameManager.ShakeCamera(1, 0.5f));
         print("City Destroyed!");
+
+        StartCoroutine(GameOver());
+    }
+
+
+    public IEnumerator GameOver()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+
+        SceneManager.LoadScene("MenuScene");
     }
 
 

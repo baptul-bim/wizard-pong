@@ -111,9 +111,9 @@ public class AbilityManager : MonoBehaviour
             if (grabReady && Vector2.Distance(ballPos, this.transform.position) <= grabRange)
             {
                 grabReady = false;
-                tempGrabFX.SetActive(true);
+                //tempGrabFX.SetActive(true);
 
-                
+                ballScript.savedVelocity = new Vector2(ballScript.savedVelocity.x / GameManager.globalSpeedMod, ballScript.savedVelocity.y / GameManager.globalSpeedMod);
                 GameManager.globalSpeedMod += 0.1f;
                 print(GameManager.globalSpeedMod);
 
@@ -124,8 +124,13 @@ public class AbilityManager : MonoBehaviour
 
                 if (playerXPos + ballXPos != 0)
                 {
-                    ballScript.SwapDirection(); ;
+                    ballRb.velocity = new Vector2(-ballScript.savedVelocity.x, -ballScript.savedVelocity.y) * GameManager.globalSpeedMod;
                 }
+                else
+                {
+                    ballRb.velocity = new Vector2(ballScript.savedVelocity.x, ballScript.savedVelocity.y) * GameManager.globalSpeedMod;
+                }
+
 
                 ballRb.simulated = false;
 
@@ -133,7 +138,10 @@ public class AbilityManager : MonoBehaviour
                 yield return new WaitForSeconds(grabDuration);
 
                 ballRb.simulated = true;
-                ballRb.velocity = new Vector2(ballRb.velocity.x, ballRb.velocity.y) * GameManager.globalSpeedMod;
+
+                
+
+                
                 ballScript.savedVelocity = ballRb.velocity;
 
 
@@ -144,7 +152,7 @@ public class AbilityManager : MonoBehaviour
             else
             {
                 grabReady = false;
-                tempGrabFX.SetActive(true);
+               // tempGrabFX.SetActive(true);
 
                 yield return new WaitForSeconds(grabDuration);
 

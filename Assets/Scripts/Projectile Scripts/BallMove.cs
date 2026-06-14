@@ -44,7 +44,7 @@ public class BallMove : MonoBehaviour
         curSpeed = ballSpeed * GameManager.globalSpeedMod;
         //rb.velocity = savedVelocity;
         
-
+     //   rb.velocity = Math.Clamp(rb.velocity.magnitude,)
         
 
         speedText.text = curSpeed.ToString("#.0");
@@ -53,6 +53,21 @@ public class BallMove : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+
+        if (collision.gameObject.CompareTag("City"))
+        {
+            collision.gameObject.GetComponent<CityManager>().DamageCity(rb.velocity.magnitude * 2);
+
+            savedVelocity = new Vector2(savedVelocity.x / GameManager.globalSpeedMod, savedVelocity.y / GameManager.globalSpeedMod);
+
+            print("saved vel x: " + savedVelocity.x);
+            print("speedmod: " + GameManager.globalSpeedMod);
+            print("saved vel x divided by speedmod: "+savedVelocity.x / GameManager.globalSpeedMod);
+
+            GameManager.globalSpeedMod = 1;
+        }
+
+
         var normal = collision.contacts[0].normal;
 
         Vector2 bounce = Vector2.Reflect(savedVelocity, normal);
@@ -73,7 +88,9 @@ public class BallMove : MonoBehaviour
         {
             print("firstbounce");
             //float firstBounceAngle = UnityEngine.Random.Range(-90, 90);
-            float firstBounceAngle = UnityEngine.Random.Range(0, 1);
+            int firstBounceAngle = UnityEngine.Random.Range(0, 2);
+            print(firstBounceAngle);
+            
 
 
             
@@ -105,10 +122,7 @@ public class BallMove : MonoBehaviour
             return;
 
         }*/
-        if (collision.gameObject.CompareTag("City"))
-        {
-            collision.gameObject.GetComponent<CityManager>().DamageCity(rb.velocity.magnitude*2);
-        }
+
 
 
         
